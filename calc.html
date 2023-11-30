@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="calculadora.css">
+</head>
+<body>
+    <table border="2">
+        <tr>
+            <td colspan="4">
+                <div id="caixa-res">
+                    <p id="exp" style="visibility: hidden;">0</p>
+                    <p id="res" data-type="number">0</p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><button id="AC" onclick="limpar()">AC</button></td>
+            <td><button id="C" onclick="limpartd()">C</button></td>
+            <td><button class="operador" id="porcento">&percnt;</button></td>
+            <td><button class="operador" id="divisao" onclick="dividir()">&divide;</button></td>
+        </tr>
+        <tr>
+            <td><button class="num" id="sete">7</button></td>
+            <td><button class="num" id="oito">8</button></td>
+            <td><button class="num" id="nove">9</button></td>
+            <td><button class="operador" id="multiplicacao" onclick="multiplicar()">&times;</button></td>
+        </tr>
+        <tr>
+            <td><button class="num" id="quatro">4</button></td>
+            <td><button class="num" id="cinco">5</button></td>
+            <td><button class="num" id="seis">6</button></td>
+            <td><button class="operador" id="subtracao" onclick="subtrair()">&minus;</button></td>
+        </tr>
+        <tr>
+            <td><button class="num" id="um">1</button></td>
+            <td><button class="num" id="dois">2</button></td>
+            <td><button class="num" id="tres">3</button></td>
+            <td><button class="operador" id="soma" onclick="somar()">&plus;</button></td>
+        </tr>
+        <tr>
+            <td><button id="virgula">,</button></td>
+            <td><button class="num" id="zero">0</button></td>
+            <td><button id="delete" onclick="deletar()">&#9003;</button></td>
+            <td><button id="igual" onclick="igualar()">=</button></td>
+        </tr>
+    </table>
+    <script>
+        const num = document.querySelectorAll(".num");
+        const virgula = document.getElementById("virgula");
+        let calc = '';
+        let res = document.getElementById("res");
+        let exp = document.getElementById("exp");
+        
+        // Criação da função da vírgula
+        // Obs: A variável calc recebe '.' ao invés de ',' pelo fato da função eval() não entender ',' como ponto flutuante
+
+        virgula.addEventListener('click', () => {
+            if (calc != '') {
+                calc += '.';
+                res.innerHTML += ',';
+            } else {
+                calc = '0.';
+                res.innerHTML = '0,';
+            };
+        });
+
+        // Associação de valores para cada botão numérico
+
+        num.forEach(num => {
+            num.addEventListener('click', () => {
+                if (num.innerHTML != 0 || res.innerHTML != 0) {
+                    calc = calc + num.innerHTML;
+                };
+                if (res.innerHTML == 0) {
+                    res.innerHTML = num.innerHTML;
+                } else {
+                    res.innerHTML += num.innerHTML;
+                };
+            });
+        });
+
+        // Função De Soma
+        // Obs: O valor associado a variável exp tem os '.' substituídos por ',' por ser visível ao usuário
+
+        function somar() {
+            if (calc != '') {
+            exp.style.visibility = 'visible';
+            calc += ' + ';
+            exp.innerHTML = calc.replace(/\./g, ',');        
+            res.innerHTML = '0';
+            };
+        };
+
+        // Função de Subtração
+        // Obs: Essa função é diferente das outras pela calculadora aceitar números negativos, portanto a função checa se
+        // a variável calc já não se trata de um número negativo para evitar erros como "--2", caso verifique que não
+        // é adicionado o sinal negativo
+
+        function subtrair() {
+            if (calc == '') {
+                calc = calc + '-';
+                res.innerHTML = calc;
+            } else if (calc != '-') {
+            exp.style.visibility = 'visible';
+            calc = calc + ' - ';
+            exp.innerHTML = calc.replace(/\./g, ',');
+            exp.innerHTML = exp.innerHTML.toString() + ' - ';
+            res.innerHTML = '0';
+            };
+        };
+
+        // Função de Multiplicação
+
+        function multiplicar() {
+            if (calc != '') {
+            exp.style.visibility = 'visible';
+            calc = calc + ' * ';
+            exp.innerHTML = calc.replace(/\./g, ',')
+            exp.innerHTML = exp.innerHTML.toString() + ' * ';
+            exp.innerHTML = calc;
+            res.innerHTML = 0;
+            };
+        };
+
+        // Função de Divisão
+
+        function dividir() {
+            if (calc != '') {
+            exp.style.visibility = 'visible';
+            calc = calc + ' / ';
+            exp.innerHTML = calc.replace(/\./g, ',')
+            exp.innerHTML = exp.innerHTML.toString() + ' / ';
+            exp.innerHTML = calc;
+            res.innerHTML = 0;
+            };
+        };
+
+        // Função de Igualar
+        // Obs: Após ser realizado o cálculo da expressão presente na variável calc, transforma a mesma em uma string
+        // para que seja possível substituir os '.' por ','
+
+        function igualar() {
+            if (calc != '') {
+                res.innerHTML = eval(calc).toString().replace(/\./g, ',')
+                calc = res.innerHTML;
+                exp.innerHTML = 0;
+                exp.style.visibility = 'hidden';
+            };
+        };
+
+        // Função de Deletar
+
+        function deletar() {
+            if(res.innerHTML.length > 1){
+                res.innerHTML = res.innerHTML.slice(0, -1);
+            } else{
+                res.innerHTML = '0';
+            }
+            calc = calc.slice(0, -1);
+        };
+
+        // Função AC
+
+        function limpar() {
+            res.innerHTML = '0';
+        };
+
+        // Função C
+        // Obs: A função AC limpa somente os valores que iriam ser adicionados a expressão
+        // Já a C limpa toda a expressão já existente
+
+        function limpartd() {
+            exp.innerHTML = '0';
+            exp.style.visibility = 'hidden';
+            res.innerHTML = '0';
+            calc = '';
+        };
+    </script>
+</body>
+</html>
